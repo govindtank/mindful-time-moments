@@ -9,10 +9,6 @@ jobs:
   deploy:
     name: Build & Deploy
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      pages: write
-      id-token: write
 
     steps:
       - name: Checkout
@@ -23,7 +19,6 @@ jobs:
         with:
           flutter-version: '3.24.0'
           channel: 'stable'
-          web-browser-chrome: true
 
       - name: Install dependencies
         run: flutter pub get
@@ -31,11 +26,9 @@ jobs:
       - name: Build Web
         run: flutter build web --release --base-href /mindful-time-moments/
 
-      - name: Upload Pages artifact
-        uses: actions/upload-pages-artifact@v3
-        with:
-          path: build/web
-
       - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          publish_branch: gh-pages
