@@ -6,8 +6,9 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: write
+  contents: read
   pages: write
+  id-token: write
 
 jobs:
   deploy:
@@ -31,11 +32,8 @@ jobs:
         run: flutter build web --release --base-href /mindful-time-moments/
 
       - name: Deploy to GitHub Pages
-        run: |
-          cd build/web
-          git init
-          git config --local user.email "github-actions[bot]@users.noreply.github.com"
-          git config --local user.name "github-actions[bot]"
-          git add -A
-          git commit -m "Deploy $(date +'%Y-%m-%d %H:%M:%S')"
-          git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/govindtank/mindful-time-moments.git" HEAD:gh-pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/web
+          publish_branch: gh-pages
