@@ -14,6 +14,9 @@ jobs:
   deploy:
     name: Build & Deploy
     runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: https://govindtank.github.io/mindful-time-moments/
 
     steps:
       - name: Checkout
@@ -31,9 +34,11 @@ jobs:
       - name: Build Web
         run: flutter build web --release --base-href /mindful-time-moments/
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/web
-          publish_branch: gh-pages
+          path: build/web
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
