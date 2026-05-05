@@ -38,4 +38,4 @@ jobs:
           git config --local user.name "github-actions[bot]"
           git add -A
           git commit -m "Deploy $(date +'%Y-%m-%d %H:%M:%S')"
-          git push --force "https://github.com/govindtank/mindful-time-moments.git" HEAD:gh-pages
+          git push --force "https://x-access-token:${GITHUB_TOKEN}@github.com/govindtank/mindful-time-moments.git" HEAD:gh-pages
