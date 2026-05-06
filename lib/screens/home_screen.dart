@@ -5,18 +5,34 @@ import '../widgets/animated_card.dart';
 
 class HomeScreen extends StatelessWidget {
   final Function(int) onNavigate;
+  final bool isDarkMode;
+  final VoidCallback onThemeToggle;
 
-  const HomeScreen({super.key, required this.onNavigate});
+  const HomeScreen({
+    super.key,
+    required this.onNavigate,
+    required this.isDarkMode,
+    required this.onThemeToggle,
+  });
+
+  // ─── Dark-aware colours ───────────────────────────────────────────────────
+
+  Color get _textPrimary   => isDarkMode ? const Color(0xFFF0F0FF) : Colors.white;
+  Color get _textSecondary => isDarkMode ? Colors.white70 : Colors.white70;
+  Color get _cardBg        => isDarkMode
+      ? Colors.white.withOpacity(0.08)
+      : Colors.white.withOpacity(0.15);
+  Color get _cardBorder    => isDarkMode
+      ? Colors.white.withOpacity(0.12)
+      : Colors.white.withOpacity(0.25);
+  Color get _tipCardBg     => isDarkMode
+      ? Colors.white.withOpacity(0.05)
+      : Colors.white.withOpacity(0.10);
 
   @override
   Widget build(BuildContext context) {
     return GradientBackground(
-      colors: const [
-        Color(0xFF667eea),
-        Color(0xFF764ba2),
-        Color(0xFF6B8DD6),
-        Color(0xFF8E37D7),
-      ],
+      isDarkMode: isDarkMode,
       child: SafeArea(
         child: LayoutBuilder(
           builder: (context, constraints) {
@@ -53,7 +69,7 @@ class HomeScreen extends StatelessWidget {
               'Mindful',
               style: GoogleFonts.poppins(
                 fontSize: 14,
-                color: Colors.white70,
+                color: _textSecondary,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -61,19 +77,28 @@ class HomeScreen extends StatelessWidget {
               'Time Moments',
               style: GoogleFonts.poppins(
                 fontSize: 28,
-                color: Colors.white,
+                color: _textPrimary,
                 fontWeight: FontWeight.bold,
               ),
             ),
           ],
         ),
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: Colors.white.withOpacity(0.15),
-            borderRadius: BorderRadius.circular(16),
+        // ── Theme toggle button ──────────────────────────────────────────
+        GestureDetector(
+          onTap: onThemeToggle,
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: _cardBg,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(color: _cardBorder),
+            ),
+            child: Icon(
+              isDarkMode ? Icons.light_mode : Icons.dark_mode,
+              color: _textPrimary,
+              size: 24,
+            ),
           ),
-          child: const Icon(Icons.self_improvement, color: Colors.white, size: 28),
         ),
       ],
     );
@@ -87,12 +112,12 @@ class HomeScreen extends StatelessWidget {
 
     return AnimatedCard(
       index: 0,
-      color: Colors.white.withOpacity(0.15),
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
-            const Icon(Icons.wb_sunny, color: Colors.amber, size: 40),
+            Icon(Icons.wb_sunny, color: Colors.amber, size: 40),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -102,7 +127,7 @@ class HomeScreen extends StatelessWidget {
                     greeting,
                     style: GoogleFonts.poppins(
                       fontSize: 22,
-                      color: Colors.white,
+                      color: _textPrimary,
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -111,7 +136,7 @@ class HomeScreen extends StatelessWidget {
                     'Take a moment to breathe and center yourself today.',
                     style: GoogleFonts.poppins(
                       fontSize: 13,
-                      color: Colors.white70,
+                      color: _textSecondary,
                     ),
                   ),
                 ],
@@ -215,20 +240,20 @@ class HomeScreen extends StatelessWidget {
                     style: GoogleFonts.poppins(
                       fontSize: 16,
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: _textPrimary,
                     ),
                   ),
                   Text(
                     feature.subtitle,
                     style: GoogleFonts.poppins(
                       fontSize: 12,
-                      color: Colors.white70,
+                      color: _textSecondary,
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, color: Colors.white54, size: 16),
+            Icon(Icons.arrow_forward_ios, color: _textSecondary, size: 16),
           ],
         ),
       ),
@@ -247,7 +272,7 @@ class HomeScreen extends StatelessWidget {
 
     return AnimatedCard(
       index: 5,
-      color: Colors.white.withOpacity(0.1),
+      color: _tipCardBg,
       child: Padding(
         padding: const EdgeInsets.all(16),
         child: Row(
@@ -259,7 +284,7 @@ class HomeScreen extends StatelessWidget {
                 tip,
                 style: GoogleFonts.poppins(
                   fontSize: 13,
-                  color: Colors.white70,
+                  color: _textSecondary,
                   fontStyle: FontStyle.italic,
                 ),
               ),

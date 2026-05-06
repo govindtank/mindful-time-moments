@@ -5,7 +5,9 @@ import '../widgets/gradient_background.dart';
 import '../widgets/animated_card.dart';
 
 class RelaxationScreen extends StatefulWidget {
-  const RelaxationScreen({super.key});
+  final bool isDarkMode;
+
+  const RelaxationScreen({super.key, required this.isDarkMode});
 
   @override
   State<RelaxationScreen> createState() => _RelaxationScreenState();
@@ -41,9 +43,18 @@ class _RelaxationScreenState extends State<RelaxationScreen>
     super.dispose();
   }
 
+  // ─── Dark-aware helpers ───────────────────────────────────────────────────
+
+  Color get _cardBg         => widget.isDarkMode ? const Color(0xFF1E1E30) : Colors.white;
+  Color get _textPrimary     => widget.isDarkMode ? const Color(0xFFF0F0FF) : const Color(0xFF2D3748);
+  Color get _textSecondary   => widget.isDarkMode ? Colors.white54 : Colors.grey[600]!;
+  Color get _textMuted       => widget.isDarkMode ? Colors.white38 : Colors.grey[500]!;
+  Color get _chipUnselected  => widget.isDarkMode ? Colors.white12 : Colors.grey[50]!;
+
   @override
   Widget build(BuildContext context) {
     return SoftGradientBackground(
+      isDarkMode: widget.isDarkMode,
       child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -68,7 +79,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
   Widget _buildHeader() {
     return AnimatedCard(
       index: 0,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
@@ -76,7 +87,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF4ECDC4).withOpacity(0.1),
+                color: const Color(0xFF4ECDC4).withOpacity(0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(Icons.spa, color: Color(0xFF4ECDC4), size: 28),
@@ -91,14 +102,14 @@ class _RelaxationScreenState extends State<RelaxationScreen>
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF2D3748),
+                      color: _textPrimary,
                     ),
                   ),
                   Text(
                     'Unwind with soothing sounds and visuals',
                     style: GoogleFonts.poppins(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: _textSecondary,
                     ),
                   ),
                 ],
@@ -113,7 +124,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
   Widget _buildVisualizer(BuildContext context) {
     return AnimatedCard(
       index: 1,
-      color: Colors.white,
+      color: _cardBg,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(24),
@@ -124,7 +135,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
               children: [
                 Text(
                   _isPlaying ? _sounds[_selectedAmbient].emoji : '🎧',
-                  style: TextStyle(fontSize: 64),
+                  style: const TextStyle(fontSize: 64),
                 ),
                 const SizedBox(height: 16),
                 Text(
@@ -132,7 +143,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
                   style: GoogleFonts.poppins(
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
-                    color: const Color(0xFF2D3748),
+                    color: _textPrimary,
                   ),
                 ),
                 if (_isPlaying) ...[
@@ -141,7 +152,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
                     _sounds[_selectedAmbient].description,
                     style: GoogleFonts.poppins(
                       fontSize: 13,
-                      color: Colors.grey[500],
+                      color: _textMuted,
                     ),
                   ),
                 ],
@@ -179,8 +190,8 @@ class _RelaxationScreenState extends State<RelaxationScreen>
                                       )!,
                                     ]
                                   : [
-                                      Colors.grey[300]!,
-                                      Colors.grey[200]!,
+                                      widget.isDarkMode ? Colors.white24 : Colors.grey[300]!,
+                                      widget.isDarkMode ? Colors.white12 : Colors.grey[200]!,
                                     ],
                               begin: Alignment.bottomCenter,
                               end: Alignment.topCenter,
@@ -202,7 +213,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
   Widget _buildSoundSelector(BuildContext context) {
     return AnimatedCard(
       index: 2,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -213,7 +224,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
               style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2D3748),
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -237,7 +248,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
                     decoration: BoxDecoration(
                       color: isSelected
                           ? const Color(0xFF4ECDC4).withOpacity(0.15)
-                          : Colors.grey[50],
+                          : _chipUnselected,
                       borderRadius: BorderRadius.circular(16),
                       border: Border.all(
                         color: isSelected
@@ -259,7 +270,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
                                 isSelected ? FontWeight.bold : FontWeight.normal,
                             color: isSelected
                                 ? const Color(0xFF4ECDC4)
-                                : Colors.grey[600],
+                                : _textSecondary,
                           ),
                         ),
                       ],
@@ -333,7 +344,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
 
     return AnimatedCard(
       index: 4,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -344,7 +355,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
               style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2D3748),
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -353,8 +364,8 @@ class _RelaxationScreenState extends State<RelaxationScreen>
               decoration: BoxDecoration(
                 gradient: LinearGradient(
                   colors: [
-                    const Color(0xFF667eea).withOpacity(0.1),
-                    const Color(0xFF764ba2).withOpacity(0.1),
+                    const Color(0xFF667eea).withOpacity(widget.isDarkMode ? 0.15 : 0.10),
+                    const Color(0xFF764ba2).withOpacity(widget.isDarkMode ? 0.15 : 0.10),
                   ],
                 ),
                 borderRadius: BorderRadius.circular(16),
@@ -382,7 +393,7 @@ class _RelaxationScreenState extends State<RelaxationScreen>
               'Breathe deeply and repeat this affirmation to yourself.',
               style: GoogleFonts.poppins(
                 fontSize: 12,
-                color: Colors.grey[500],
+                color: _textMuted,
               ),
             ),
           ],

@@ -5,7 +5,9 @@ import '../widgets/gradient_background.dart';
 import '../widgets/animated_card.dart';
 
 class MeditationScreen extends StatefulWidget {
-  const MeditationScreen({super.key});
+  final bool isDarkMode;
+
+  const MeditationScreen({super.key, required this.isDarkMode});
 
   @override
   State<MeditationScreen> createState() => _MeditationScreenState();
@@ -74,9 +76,11 @@ class _MeditationScreenState extends State<MeditationScreen>
   }
 
   void _showCompletionDialog() {
+    final isDark = widget.isDarkMode;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
+        backgroundColor: isDark ? const Color(0xFF1A1A2E) : Colors.white,
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
         title: Text('🧘 Well Done!',
             style: GoogleFonts.poppins(fontWeight: FontWeight.bold)),
@@ -87,7 +91,9 @@ class _MeditationScreenState extends State<MeditationScreen>
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('Continue'),
+            child: Text('Continue',
+                style: TextStyle(
+                    color: Theme.of(context).colorScheme.primary)),
           ),
         ],
       ),
@@ -100,9 +106,18 @@ class _MeditationScreenState extends State<MeditationScreen>
     return '$m:$s';
   }
 
+  // ─── Dark-aware helpers ───────────────────────────────────────────────────
+
+  Color get _cardBg       => widget.isDarkMode ? const Color(0xFF1E1E30) : Colors.white;
+  Color get _textPrimary   => widget.isDarkMode ? const Color(0xFFF0F0FF) : const Color(0xFF2D3748);
+  Color get _textSecondary => widget.isDarkMode ? Colors.white54 : Colors.grey[600]!;
+  Color get _textMuted     => widget.isDarkMode ? Colors.white38 : Colors.grey[500]!;
+  Color get _chipUnselected=> widget.isDarkMode ? Colors.white12 : Colors.grey[100]!;
+
   @override
   Widget build(BuildContext context) {
     return SoftGradientBackground(
+      isDarkMode: widget.isDarkMode,
       child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -127,7 +142,7 @@ class _MeditationScreenState extends State<MeditationScreen>
   Widget _buildHeader() {
     return AnimatedCard(
       index: 0,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -135,7 +150,7 @@ class _MeditationScreenState extends State<MeditationScreen>
             Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: const Color(0xFF667eea).withOpacity(0.1),
+                color: const Color(0xFF667eea).withOpacity(0.15),
                 shape: BoxShape.circle,
               ),
               child: const Icon(
@@ -150,7 +165,7 @@ class _MeditationScreenState extends State<MeditationScreen>
               style: GoogleFonts.poppins(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2D3748),
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 8),
@@ -158,7 +173,7 @@ class _MeditationScreenState extends State<MeditationScreen>
               'Choose your session length and find your inner peace',
               style: GoogleFonts.poppins(
                 fontSize: 14,
-                color: Colors.grey[600],
+                color: _textSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -171,7 +186,7 @@ class _MeditationScreenState extends State<MeditationScreen>
   Widget _buildTimer(BuildContext context) {
     return AnimatedCard(
       index: 1,
-      color: Colors.white,
+      color: _cardBg,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(40),
@@ -197,7 +212,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                   ),
                   boxShadow: [
                     BoxShadow(
-                      color: const Color(0xFF667eea).withOpacity(0.3),
+                      color: const Color(0xFF667eea).withOpacity(0.35),
                       blurRadius: 30,
                       spreadRadius: 5,
                     ),
@@ -230,7 +245,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                 'Ready to begin',
                 style: GoogleFonts.poppins(
                   fontSize: 16,
-                  color: Colors.grey[500],
+                  color: _textMuted,
                 ),
               ),
           ],
@@ -242,7 +257,7 @@ class _MeditationScreenState extends State<MeditationScreen>
   Widget _buildDurationPicker(BuildContext context) {
     return AnimatedCard(
       index: 2,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -253,7 +268,7 @@ class _MeditationScreenState extends State<MeditationScreen>
               style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2D3748),
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -276,7 +291,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                           ? const LinearGradient(
                               colors: [Color(0xFF667eea), Color(0xFF764ba2)])
                           : null,
-                      color: isSelected ? null : Colors.grey[100],
+                      color: isSelected ? null : _chipUnselected,
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
@@ -285,7 +300,7 @@ class _MeditationScreenState extends State<MeditationScreen>
                         fontSize: 14,
                         fontWeight:
                             isSelected ? FontWeight.bold : FontWeight.normal,
-                        color: isSelected ? Colors.white : Colors.grey[600],
+                        color: isSelected ? Colors.white : _textSecondary,
                       ),
                     ),
                   ),
@@ -301,7 +316,7 @@ class _MeditationScreenState extends State<MeditationScreen>
   Widget _buildControls(BuildContext context) {
     return AnimatedCard(
       index: 3,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
@@ -311,14 +326,14 @@ class _MeditationScreenState extends State<MeditationScreen>
               icon: Icons.refresh,
               label: 'Reset',
               onTap: _resetTimer,
-              color: Colors.grey,
+              color: _textSecondary,
             ),
             _buildMainButton(),
             _buildControlButton(
               icon: Icons.pause,
               label: 'Pause',
               onTap: _isRunning ? _pauseTimer : null,
-              color: Colors.grey,
+              color: _textSecondary,
             ),
           ],
         ),
@@ -389,7 +404,7 @@ class _MeditationScreenState extends State<MeditationScreen>
   Widget _buildTips(BuildContext context) {
     return AnimatedCard(
       index: 4,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -400,7 +415,7 @@ class _MeditationScreenState extends State<MeditationScreen>
               style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2D3748),
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 12),
@@ -424,7 +439,7 @@ class _MeditationScreenState extends State<MeditationScreen>
           Expanded(
             child: Text(
               text,
-              style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700]),
+              style: GoogleFonts.poppins(fontSize: 13, color: _textSecondary),
             ),
           ),
         ],

@@ -7,6 +7,7 @@ import 'screens/breathing_screen.dart';
 import 'screens/mood_tracker_screen.dart';
 import 'screens/relaxation_screen.dart';
 import 'services/mood_service.dart';
+import 'services/theme_service.dart';
 
 class MindfulApp extends StatefulWidget {
   final MoodService moodService;
@@ -18,12 +19,12 @@ class MindfulApp extends StatefulWidget {
 }
 
 class _MindfulAppState extends State<MindfulApp> {
-  bool _isDarkMode = false;
+  bool _isDarkMode = ThemeService.isDarkMode;
 
-  void _toggleTheme() {
-    setState(() {
-      _isDarkMode = !_isDarkMode;
-    });
+  void _toggleTheme() async {
+    final next = !_isDarkMode;
+    await ThemeService.setDarkMode(next);
+    setState(() => _isDarkMode = next);
   }
 
   @override
@@ -152,7 +153,7 @@ class _MainNavigatorState extends State<MainNavigator> {
 
   @override
   Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isDark = widget.isDarkMode;
     final primaryColor = Theme.of(context).colorScheme.primary;
 
     return Scaffold(
@@ -208,8 +209,11 @@ class _MainNavigatorState extends State<MainNavigator> {
     final bgColor = isDark
         ? const Color(0xFF0A0A14).withOpacity(0.95)
         : Colors.white.withOpacity(0.95);
-    final textColor = isDark ? Colors.white : const Color(0xFF1A1A2E);
+    final textColor = isDark ? const Color(0xFFF0F0FF) : const Color(0xFF1A1A2E);
     final mutedColor = isDark ? Colors.white38 : Colors.grey.shade400;
+    final selectedBg = isDark
+        ? primaryColor.withOpacity(0.25)
+        : primaryColor.withOpacity(0.12);
 
     return Container(
       decoration: BoxDecoration(
@@ -217,7 +221,7 @@ class _MainNavigatorState extends State<MainNavigator> {
         boxShadow: [
           BoxShadow(
             color: isDark
-                ? Colors.black.withOpacity(0.4)
+                ? Colors.black.withOpacity(0.5)
                 : Colors.black.withOpacity(0.06),
             blurRadius: 20,
             offset: const Offset(0, -5),
@@ -234,11 +238,11 @@ class _MainNavigatorState extends State<MainNavigator> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              _buildNavItem(0, Icons.home_rounded, 'Home', textColor, mutedColor, primaryColor),
-              _buildNavItem(1, Icons.self_improvement, 'Meditate', textColor, mutedColor, primaryColor),
-              _buildNavItem(2, Icons.air, 'Breathe', textColor, mutedColor, primaryColor),
-              _buildNavItem(3, Icons.mood, 'Mood', textColor, mutedColor, primaryColor),
-              _buildNavItem(4, Icons.spa, 'Relax', textColor, mutedColor, primaryColor),
+              _buildNavItem(0, Icons.home_rounded, 'Home', textColor, mutedColor, selectedBg),
+              _buildNavItem(1, Icons.self_improvement, 'Meditate', textColor, mutedColor, selectedBg),
+              _buildNavItem(2, Icons.air, 'Breathe', textColor, mutedColor, selectedBg),
+              _buildNavItem(3, Icons.mood, 'Mood', textColor, mutedColor, selectedBg),
+              _buildNavItem(4, Icons.spa, 'Relax', textColor, mutedColor, selectedBg),
             ],
           ),
         ),
@@ -246,7 +250,14 @@ class _MainNavigatorState extends State<MainNavigator> {
     );
   }
 
-  Widget _buildNavItem(int index, IconData icon, String label, Color textColor, Color mutedColor, Color primaryColor) {
+  Widget _buildNavItem(
+    int index,
+    IconData icon,
+    String label,
+    Color textColor,
+    Color mutedColor,
+    Color selectedBg,
+  ) {
     final isSelected = _currentIndex == index;
     return GestureDetector(
       onTap: () => setState(() => _currentIndex = index),
@@ -259,9 +270,13 @@ class _MainNavigatorState extends State<MainNavigator> {
         decoration: BoxDecoration(
           gradient: isSelected
               ? LinearGradient(
-                  colors: [primaryColor, primaryColor.withOpacity(0.7)],
+                  colors: [
+                    Theme.of(context).colorScheme.primary,
+                    Theme.of(context).colorScheme.primary.withOpacity(0.7),
+                  ],
                 )
               : null,
+          color: isSelected ? null : selectedBg,
           borderRadius: BorderRadius.circular(16),
         ),
         child: Row(

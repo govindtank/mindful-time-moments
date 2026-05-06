@@ -48,6 +48,11 @@ class _AnimatedCardState extends State<AnimatedCard>
 
   @override
   Widget build(BuildContext context) {
+    // Auto-detect dark mode if caller didn't pass a specific color
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final defaultCardColor = isDark ? const Color(0xFF1E1E30) : Colors.white;
+    final defaultShadow = isDark ? Colors.black.withOpacity(0.35) : Colors.black.withOpacity(0.08);
+
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -63,11 +68,11 @@ class _AnimatedCardState extends State<AnimatedCard>
         onTap: widget.onTap,
         child: Container(
           decoration: BoxDecoration(
-            color: widget.color ?? Colors.white,
+            color: widget.color ?? defaultCardColor,
             borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
-                color: Colors.black.withOpacity(0.08),
+                color: defaultShadow,
                 blurRadius: 20,
                 offset: const Offset(0, 8),
               ),

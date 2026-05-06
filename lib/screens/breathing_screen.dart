@@ -5,7 +5,9 @@ import '../widgets/gradient_background.dart';
 import '../widgets/animated_card.dart';
 
 class BreathingScreen extends StatefulWidget {
-  const BreathingScreen({super.key});
+  final bool isDarkMode;
+
+  const BreathingScreen({super.key, required this.isDarkMode});
 
   @override
   State<BreathingScreen> createState() => _BreathingScreenState();
@@ -66,7 +68,6 @@ class _BreathingScreenState extends State<BreathingScreen>
   void _runCycle() {
     final pattern = _patterns[_selectedPattern];
     int step = 0;
-    int holdStep = 0;
 
     void nextStep() {
       if (!mounted || !_isActive) return;
@@ -81,10 +82,9 @@ class _BreathingScreenState extends State<BreathingScreen>
         case 1:
           if (pattern.holdAfterInhale > 0) {
             setState(() => _instruction = 'Hold');
-            holdStep = 1;
             _timer = Timer(
                 Duration(seconds: pattern.holdAfterInhale), () {
-              holdStep = 2;
+              step++;
               nextStep();
             });
           } else {
@@ -133,9 +133,18 @@ class _BreathingScreenState extends State<BreathingScreen>
     }
   }
 
+  // ─── Dark-aware helpers ───────────────────────────────────────────────────
+
+  Color get _cardBg       => widget.isDarkMode ? const Color(0xFF1E1E30) : Colors.white;
+  Color get _textPrimary   => widget.isDarkMode ? const Color(0xFFF0F0FF) : const Color(0xFF2D3748);
+  Color get _textSecondary => widget.isDarkMode ? Colors.white54 : Colors.grey[600]!;
+  Color get _textMuted     => widget.isDarkMode ? Colors.white38 : Colors.grey[500]!;
+  Color get _chipUnselected=> widget.isDarkMode ? Colors.white12 : Colors.grey[50]!;
+
   @override
   Widget build(BuildContext context) {
     return SoftGradientBackground(
+      isDarkMode: widget.isDarkMode,
       child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -161,7 +170,7 @@ class _BreathingScreenState extends State<BreathingScreen>
   Widget _buildHeader() {
     return AnimatedCard(
       index: 0,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
@@ -169,7 +178,7 @@ class _BreathingScreenState extends State<BreathingScreen>
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFF43C6AC).withOpacity(0.1),
+                color: const Color(0xFF43C6AC).withOpacity(0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(Icons.air, color: Color(0xFF43C6AC), size: 28),
@@ -184,14 +193,14 @@ class _BreathingScreenState extends State<BreathingScreen>
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF2D3748),
+                      color: _textPrimary,
                     ),
                   ),
                   Text(
                     'Calm your nervous system with guided breathing',
                     style: GoogleFonts.poppins(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: _textSecondary,
                     ),
                   ),
                 ],
@@ -206,7 +215,7 @@ class _BreathingScreenState extends State<BreathingScreen>
   Widget _buildBreathingCircle(BuildContext context) {
     return AnimatedCard(
       index: 1,
-      color: Colors.white,
+      color: _cardBg,
       child: Container(
         width: double.infinity,
         padding: const EdgeInsets.all(32),
@@ -287,7 +296,7 @@ class _BreathingScreenState extends State<BreathingScreen>
   Widget _buildPatternSelector(BuildContext context) {
     return AnimatedCard(
       index: 2,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -298,7 +307,7 @@ class _BreathingScreenState extends State<BreathingScreen>
               style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2D3748),
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -313,8 +322,8 @@ class _BreathingScreenState extends State<BreathingScreen>
                   padding: const EdgeInsets.all(14),
                   decoration: BoxDecoration(
                     color: isSelected
-                        ? const Color(0xFF43C6AC).withOpacity(0.1)
-                        : Colors.grey[50],
+                        ? const Color(0xFF43C6AC).withOpacity(0.12)
+                        : _chipUnselected,
                     borderRadius: BorderRadius.circular(14),
                     border: Border.all(
                       color: isSelected
@@ -332,7 +341,7 @@ class _BreathingScreenState extends State<BreathingScreen>
                           shape: BoxShape.circle,
                           color: isSelected
                               ? const Color(0xFF43C6AC)
-                              : Colors.grey[300],
+                              : _textMuted,
                         ),
                       ),
                       const SizedBox(width: 12),
@@ -346,15 +355,15 @@ class _BreathingScreenState extends State<BreathingScreen>
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
                                 color: isSelected
-                                    ? const Color(0xFF2D3748)
-                                    : Colors.grey[700],
+                                    ? _textPrimary
+                                    : _textSecondary,
                               ),
                             ),
                             Text(
                               p.description,
                               style: GoogleFonts.poppins(
                                 fontSize: 11,
-                                color: Colors.grey[500],
+                                color: _textMuted,
                               ),
                             ),
                           ],
@@ -374,7 +383,7 @@ class _BreathingScreenState extends State<BreathingScreen>
   Widget _buildCycleCounter(BuildContext context) {
     return AnimatedCard(
       index: 2,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -391,7 +400,7 @@ class _BreathingScreenState extends State<BreathingScreen>
               'Cycles Completed',
               style: GoogleFonts.poppins(
                 fontSize: 14,
-                color: Colors.grey[600],
+                color: _textSecondary,
               ),
             ),
           ],
@@ -405,7 +414,6 @@ class _BreathingScreenState extends State<BreathingScreen>
       onTap: _isActive ? _stopBreathing : _startBreathing,
       child: AnimatedCard(
         index: 3,
-        color: Colors.white,
         child: Container(
           width: double.infinity,
           padding: const EdgeInsets.symmetric(vertical: 16),
@@ -452,7 +460,7 @@ class _BreathingScreenState extends State<BreathingScreen>
   Widget _buildInstructions(BuildContext context) {
     return AnimatedCard(
       index: 4,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -463,32 +471,32 @@ class _BreathingScreenState extends State<BreathingScreen>
               style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2D3748),
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 12),
-            _buildInstructionRow(Icons.circle, 'Sit comfortably with a straight back'),
-            _buildInstructionRow(Icons.circle, 'Place one hand on your chest, one on belly'),
-            _buildInstructionRow(Icons.circle, 'Breathe through your nose slowly'),
-            _buildInstructionRow(Icons.circle, 'Follow the circle\'s rhythm'),
-            _buildInstructionRow(Icons.circle, 'Keep your shoulders relaxed'),
+            _buildInstructionRow('Sit comfortably with a straight back'),
+            _buildInstructionRow('Place one hand on your chest, one on belly'),
+            _buildInstructionRow('Breathe through your nose slowly'),
+            _buildInstructionRow('Follow the circle\'s rhythm'),
+            _buildInstructionRow('Keep your shoulders relaxed'),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildInstructionRow(IconData icon, String text) {
+  Widget _buildInstructionRow(String text) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         children: [
-          Icon(icon, color: const Color(0xFF43C6AC), size: 10),
+          Icon(Icons.circle, color: const Color(0xFF43C6AC), size: 10),
           const SizedBox(width: 10),
           Expanded(
             child: Text(
               text,
-              style: GoogleFonts.poppins(fontSize: 13, color: Colors.grey[700]),
+              style: GoogleFonts.poppins(fontSize: 13, color: _textSecondary),
             ),
           ),
         ],
@@ -505,12 +513,7 @@ class _BreathingPattern {
   final int holdAfterExhale;
 
   _BreathingPattern(
-    this.name,
-    this.inhale,
-    this.holdAfterInhale,
-    this.exhale,
-    this.holdAfterExhale,
-  );
+      this.name, this.inhale, this.holdAfterInhale, this.exhale, this.holdAfterExhale);
 
   String get description {
     final parts = <String>[];

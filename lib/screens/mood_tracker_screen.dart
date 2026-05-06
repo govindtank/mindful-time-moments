@@ -8,8 +8,13 @@ import '../widgets/animated_card.dart';
 
 class MoodTrackerScreen extends StatefulWidget {
   final MoodService moodService;
+  final bool isDarkMode;
 
-  const MoodTrackerScreen({super.key, required this.moodService});
+  const MoodTrackerScreen({
+    super.key,
+    required this.moodService,
+    required this.isDarkMode,
+  });
 
   @override
   State<MoodTrackerScreen> createState() => _MoodTrackerScreenState();
@@ -45,7 +50,9 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('Mood saved: ${MoodEntry.getEmoji(_selectedMood)} ${MoodEntry.getLabel(_selectedMood)}'),
+          content: Text(
+            'Mood saved: ${MoodEntry.getEmoji(_selectedMood)} ${MoodEntry.getLabel(_selectedMood)}',
+          ),
           backgroundColor: const Color(0xFF667eea),
           behavior: SnackBarBehavior.floating,
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
@@ -54,9 +61,22 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     }
   }
 
+  // ─── Dark-aware helpers ───────────────────────────────────────────────────
+
+  Color get _cardBg         => widget.isDarkMode ? const Color(0xFF1E1E30) : Colors.white;
+  Color get _textPrimary     => widget.isDarkMode ? const Color(0xFFF0F0FF) : const Color(0xFF2D3748);
+  Color get _textSecondary   => widget.isDarkMode ? Colors.white54 : Colors.grey[600]!;
+  Color get _textMuted       => widget.isDarkMode ? Colors.white38 : Colors.grey[400]!;
+  Color get _textDarker      => widget.isDarkMode ? Colors.white70 : Colors.grey[700]!;
+  Color get _chipUnselected  => widget.isDarkMode ? Colors.white12 : Colors.grey[100]!;
+  Color get _chipDot         => widget.isDarkMode ? Colors.white30 : Colors.grey[300]!;
+  Color get _inputFill       => widget.isDarkMode ? Colors.white.withOpacity(0.08) : Colors.grey[50]!;
+  Color get _gridLine        => widget.isDarkMode ? Colors.white12 : Colors.grey[200]!;
+
   @override
   Widget build(BuildContext context) {
     return SoftGradientBackground(
+      isDarkMode: widget.isDarkMode,
       child: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -86,7 +106,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
   Widget _buildHeader() {
     return AnimatedCard(
       index: 0,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
@@ -94,7 +114,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
             Container(
               padding: const EdgeInsets.all(12),
               decoration: BoxDecoration(
-                color: const Color(0xFFFF6B6B).withOpacity(0.1),
+                color: const Color(0xFFFF6B6B).withOpacity(0.15),
                 borderRadius: BorderRadius.circular(12),
               ),
               child: const Icon(Icons.mood, color: Color(0xFFFF6B6B), size: 28),
@@ -109,14 +129,14 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                     style: GoogleFonts.poppins(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: const Color(0xFF2D3748),
+                      color: _textPrimary,
                     ),
                   ),
                   Text(
                     'How are you feeling right now?',
                     style: GoogleFonts.poppins(
                       fontSize: 12,
-                      color: Colors.grey[600],
+                      color: _textSecondary,
                     ),
                   ),
                 ],
@@ -131,7 +151,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
   Widget _buildMoodSelector(BuildContext context) {
     return AnimatedCard(
       index: 1,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -146,14 +166,14 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
               style: GoogleFonts.poppins(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2D3748),
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 20),
             SliderTheme(
               data: SliderThemeData(
                 activeTrackColor: _getMoodColor(_selectedMood),
-                inactiveTrackColor: Colors.grey[200],
+                inactiveTrackColor: _chipUnselected,
                 thumbColor: _getMoodColor(_selectedMood),
                 overlayColor: _getMoodColor(_selectedMood).withOpacity(0.2),
                 trackHeight: 8,
@@ -190,7 +210,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                           shape: BoxShape.circle,
                           color: level == _selectedMood
                               ? _getMoodColor(level)
-                              : Colors.grey[300],
+                              : _chipDot,
                         ),
                       ),
                     ],
@@ -206,25 +226,19 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
   Color _getMoodColor(int level) {
     switch (level) {
-      case 1:
-        return Colors.red[400]!;
-      case 2:
-        return Colors.orange[400]!;
-      case 3:
-        return Colors.amber[400]!;
-      case 4:
-        return Colors.lightGreen[400]!;
-      case 5:
-        return Colors.green[400]!;
-      default:
-        return Colors.amber;
+      case 1: return Colors.red[400]!;
+      case 2: return Colors.orange[400]!;
+      case 3: return Colors.amber[400]!;
+      case 4: return Colors.lightGreen[400]!;
+      case 5: return Colors.green[400]!;
+      default: return Colors.amber;
     }
   }
 
   Widget _buildNoteInput(BuildContext context) {
     return AnimatedCard(
       index: 2,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -235,22 +249,22 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
               style: GoogleFonts.poppins(
                 fontSize: 14,
                 fontWeight: FontWeight.w600,
-                color: const Color(0xFF2D3748),
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 12),
             TextField(
               controller: _noteController,
               maxLines: 3,
-              style: GoogleFonts.poppins(fontSize: 14),
+              style: GoogleFonts.poppins(fontSize: 14, color: _textPrimary),
               decoration: InputDecoration(
                 hintText: 'What\'s on your mind?',
                 hintStyle: GoogleFonts.poppins(
                   fontSize: 14,
-                  color: Colors.grey[400],
+                  color: _textMuted,
                 ),
                 filled: true,
-                fillColor: Colors.grey[50],
+                fillColor: _inputFill,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(14),
                   borderSide: BorderSide.none,
@@ -317,7 +331,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
     return AnimatedCard(
       index: 4,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -328,7 +342,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
               style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2D3748),
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 20),
@@ -341,7 +355,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                     drawVerticalLine: false,
                     horizontalInterval: 1,
                     getDrawingHorizontalLine: (value) => FlLine(
-                      color: Colors.grey[200]!,
+                      color: _gridLine,
                       strokeWidth: 1,
                     ),
                   ),
@@ -371,7 +385,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                               '${date.day}/${date.month}',
                               style: GoogleFonts.poppins(
                                 fontSize: 10,
-                                color: Colors.grey[500],
+                                color: _textMuted,
                               ),
                             ),
                           );
@@ -400,7 +414,9 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                         getDotPainter: (spot, percent, bar, index) {
                           return FlDotCirclePainter(
                             radius: 5,
-                            color: Colors.white,
+                            color: widget.isDarkMode
+                                ? const Color(0xFF1E1E30)
+                                : Colors.white,
                             strokeWidth: 2,
                             strokeColor: const Color(0xFFFF6B6B),
                           );
@@ -425,7 +441,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
     final recent = _entries.take(10).toList().reversed.toList();
     return AnimatedCard(
       index: 5,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
@@ -436,7 +452,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
               style: GoogleFonts.poppins(
                 fontSize: 16,
                 fontWeight: FontWeight.bold,
-                color: const Color(0xFF2D3748),
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 16),
@@ -455,7 +471,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                               style: GoogleFonts.poppins(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w600,
-                                color: const Color(0xFF2D3748),
+                                color: _textPrimary,
                               ),
                             ),
                             if (entry.note.isNotEmpty)
@@ -463,7 +479,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                                 entry.note,
                                 style: GoogleFonts.poppins(
                                   fontSize: 12,
-                                  color: Colors.grey[500],
+                                  color: _textMuted,
                                 ),
                                 maxLines: 1,
                                 overflow: TextOverflow.ellipsis,
@@ -475,7 +491,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
                         _formatDate(entry.date),
                         style: GoogleFonts.poppins(
                           fontSize: 11,
-                          color: Colors.grey[400],
+                          color: _textMuted,
                         ),
                       ),
                     ],
@@ -490,7 +506,7 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
   Widget _buildEmptyState(BuildContext context) {
     return AnimatedCard(
       index: 4,
-      color: Colors.white,
+      color: _cardBg,
       child: Padding(
         padding: const EdgeInsets.all(32),
         child: Column(
@@ -500,17 +516,17 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
             Text(
               'No mood entries yet',
               style: GoogleFonts.poppins(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-                color: const Color(0xFF2D3748),
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: _textPrimary,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              'Log your first mood above to start tracking your emotional journey',
+              'Start tracking your mood to see your history here',
               style: GoogleFonts.poppins(
                 fontSize: 13,
-                color: Colors.grey[500],
+                color: _textSecondary,
               ),
               textAlign: TextAlign.center,
             ),
@@ -522,12 +538,9 @@ class _MoodTrackerScreenState extends State<MoodTrackerScreen> {
 
   String _formatDate(DateTime date) {
     final now = DateTime.now();
-    if (date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day) return 'Today';
-    if (date.year == now.year &&
-        date.month == now.month &&
-        date.day == now.day - 1) return 'Yesterday';
+    final diff = now.difference(date);
+    if (diff.inDays == 0) return 'Today';
+    if (diff.inDays == 1) return 'Yesterday';
     return '${date.day}/${date.month}';
   }
 }
