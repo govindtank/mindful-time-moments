@@ -17,17 +17,44 @@ class HomeScreen extends StatelessWidget {
 
   // ─── Dark-aware colours ───────────────────────────────────────────────────
 
-  Color get _textPrimary   => isDarkMode ? const Color(0xFFF0F0FF) : Colors.white;
-  Color get _textSecondary => isDarkMode ? Colors.white70 : Colors.white70;
-  Color get _cardBg        => isDarkMode
+  Color get _textPrimary    => isDarkMode ? const Color(0xFFF0F0FF) : Colors.white;
+  Color get _textSecondary  => isDarkMode ? Colors.white70 : Colors.white70;
+  Color get _cardBg         => isDarkMode
       ? Colors.white.withOpacity(0.08)
       : Colors.white.withOpacity(0.15);
-  Color get _cardBorder    => isDarkMode
+  Color get _cardBorder     => isDarkMode
       ? Colors.white.withOpacity(0.12)
       : Colors.white.withOpacity(0.25);
-  Color get _tipCardBg     => isDarkMode
+  Color get _tipCardBg      => isDarkMode
       ? Colors.white.withOpacity(0.05)
       : Colors.white.withOpacity(0.10);
+
+  // ─── Feature card colours ─────────────────────────────────────────────────
+
+  Color featureCardBg(bool isDark) =>
+      isDark ? Colors.white.withOpacity(0.08) : Colors.white;
+
+  Color featureTextPrimary(bool isDark) =>
+      isDark ? Colors.white : const Color(0xFF1A1A2E);
+
+  Color featureTextSecondary(bool isDark) =>
+      isDark ? Colors.white70 : const Color(0xFF5A6478);
+
+  Color featureArrow(bool isDark) =>
+      isDark ? Colors.white54 : const Color(0xFF667eea);
+
+  // ─── Card helpers ──────────────────────────────────────────────────────────
+
+  /// Greeting card — opaque white in light mode for readability,
+  /// translucent in dark mode to show the gradient.
+  Color greetingCardBg(bool isDark) =>
+      isDark ? Colors.white.withOpacity(0.08) : Colors.white;
+
+  Color greetingTextPrimary(bool isDark) =>
+      isDark ? Colors.white : const Color(0xFF1A1A2E);
+
+  Color greetingTextSecondary(bool isDark) =>
+      isDark ? Colors.white70 : const Color(0xFF5A6478);
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +132,7 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildGreeting(BuildContext context) {
+    final isDark = isDarkMode;
     final hour = DateTime.now().hour;
     String greeting = 'Good Morning';
     if (hour >= 12 && hour < 17) greeting = 'Good Afternoon';
@@ -112,12 +140,20 @@ class HomeScreen extends StatelessWidget {
 
     return AnimatedCard(
       index: 0,
-      color: _cardBg,
+      color: greetingCardBg(isDark),
       child: Padding(
         padding: const EdgeInsets.all(20),
         child: Row(
           children: [
-            Icon(Icons.wb_sunny, color: Colors.amber, size: 40),
+            Container(
+              width: 52,
+              height: 52,
+              decoration: BoxDecoration(
+                color: const Color(0xFFFFD166).withOpacity(isDark ? 0.25 : 0.18),
+                borderRadius: BorderRadius.circular(14),
+              ),
+              child: Icon(Icons.wb_sunny, color: const Color(0xFFFFB300), size: 28),
+            ),
             const SizedBox(width: 16),
             Expanded(
               child: Column(
@@ -127,7 +163,7 @@ class HomeScreen extends StatelessWidget {
                     greeting,
                     style: GoogleFonts.poppins(
                       fontSize: 22,
-                      color: _textPrimary,
+                      color: greetingTextPrimary(isDark),
                       fontWeight: FontWeight.bold,
                     ),
                   ),
@@ -136,7 +172,7 @@ class HomeScreen extends StatelessWidget {
                     'Take a moment to breathe and center yourself today.',
                     style: GoogleFonts.poppins(
                       fontSize: 13,
-                      color: _textSecondary,
+                      color: greetingTextSecondary(isDark),
                     ),
                   ),
                 ],
@@ -207,24 +243,31 @@ class HomeScreen extends StatelessWidget {
   }
 
   Widget _buildFeatureCard(BuildContext context, _FeatureItem feature, int index) {
+    final isDark = isDarkMode;
+
     return AnimatedCard(
       index: index + 1,
+      color: featureCardBg(isDark),
       onTap: () => onNavigate(index),
       child: Container(
         padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
-          gradient: LinearGradient(
-            colors: feature.gradient.map((c) => c.withOpacity(0.15)).toList(),
+          border: Border(
+            left: BorderSide(
+              color: feature.color,
+              width: 4,
+            ),
           ),
         ),
         child: Row(
           children: [
+            // Icon bubble — tinted with the feature's brand colour
             Container(
               width: 56,
               height: 56,
               decoration: BoxDecoration(
-                color: feature.color.withOpacity(0.2),
+                color: feature.color.withOpacity(isDark ? 0.2 : 0.12),
                 borderRadius: BorderRadius.circular(16),
               ),
               child: Icon(feature.icon, color: feature.color, size: 28),
@@ -239,21 +282,26 @@ class HomeScreen extends StatelessWidget {
                     feature.title,
                     style: GoogleFonts.poppins(
                       fontSize: 16,
-                      fontWeight: FontWeight.bold,
-                      color: _textPrimary,
+                      fontWeight: FontWeight.w600,
+                      color: featureTextPrimary(isDark),
                     ),
                   ),
+                  const SizedBox(height: 2),
                   Text(
                     feature.subtitle,
                     style: GoogleFonts.poppins(
                       fontSize: 12,
-                      color: _textSecondary,
+                      color: featureTextSecondary(isDark),
                     ),
                   ),
                 ],
               ),
             ),
-            Icon(Icons.arrow_forward_ios, color: _textSecondary, size: 16),
+            Icon(
+              Icons.arrow_forward_ios_rounded,
+              color: featureArrow(isDark),
+              size: 18,
+            ),
           ],
         ),
       ),
